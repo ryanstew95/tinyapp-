@@ -1,3 +1,4 @@
+// Random string
 const characters =
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
@@ -10,6 +11,9 @@ const generateRandomString = function(length) {
 
   return result;
 };
+///////////////////////////////////////////////////////////////////////
+// CONFIG
+///////////////////////////////////////////////////////////////////////
 
 const express = require("express");
 const app = express();
@@ -17,12 +21,24 @@ const PORT = 8080; // default port 8080
 
 app.set("view engine", "ejs");
 
+///////////////////////////////////////////////////////////////////////
+// DATABASE
+///////////////////////////////////////////////////////////////////////
+
 const urlDatabase = {
-  b2xVn2: "http://www.lighthouselabs.ca",
+  "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com",
+  "dIp8z2": "http://www.example.com"
 };
 
+///////////////////////////////////////////////////////////////////////
+// MIDDLEWARE
+///////////////////////////////////////////////////////////////////////
+
 app.use(express.urlencoded({ extended: true }));
+///////////////////////////////////////////////////////////////////////
+// ROUTES
+///////////////////////////////////////////////////////////////////////
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -52,11 +68,30 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+
+// Complete the code so that requests to the
+// endpoint "/u/:id" will redirect to its longURL
+// app.get("/u/:id", (req, res) => {
+//   const key = req.params.id;
+//   const longURL = urlDatabase[key];
+//   res.redirect(longURL);
+// });
+
+
+app.post("/urls", (req, res) => {
+  const shortUrl = generateRandomString(6);
+  urlDatabase[shortUrl] = req.body.longURL;
+  res.redirect(`/urls/${shortUrl}`);
+});
+
+
+
+///////////////////////////////////////////////////////////////////////
+// LISTENER
+///////////////////////////////////////////////////////////////////////
+
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
-app.post("/urls", (req, res) => {
-  console.log(req.body); // Log the POST request body to the console
-  res.send("Ok"); // Respond with 'Ok' (we will replace this)
-});
+
