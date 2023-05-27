@@ -26,9 +26,9 @@ app.set("view engine", "ejs");
 ///////////////////////////////////////////////////////////////////////
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
+  b2xVn2: "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com",
-  "dIp8z2": "http://www.example.com"
+  dIp8z2: "http://www.example.com",
 };
 
 ///////////////////////////////////////////////////////////////////////
@@ -36,6 +36,7 @@ const urlDatabase = {
 ///////////////////////////////////////////////////////////////////////
 
 app.use(express.urlencoded({ extended: true }));
+
 ///////////////////////////////////////////////////////////////////////
 // ROUTES
 ///////////////////////////////////////////////////////////////////////
@@ -52,6 +53,10 @@ app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
+///////////////////////////////////////////////////////////////////////
+// ROUTES
+///////////////////////////////////////////////////////////////////////
+
 // read: index display all urls
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
@@ -59,9 +64,26 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
+//login form
+// app.post("/login", (req, res) => {
+//   const templateVars = {
+//     user: users[req.session["userID"]]
+//   };
+//   res.render("urls_login", templateVars);
+// });
+// login form
+app.post("/login", (req, res) => {
+  const users = req.body.username; // Access the username entered by the client
+  const templateVars = {
+    user: users
+  };
+  res.render("login", templateVars);
+});
+
 // create: create new url
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
+  res.redirect('/urls');
 });
 
 // show: show single url
@@ -85,21 +107,19 @@ app.post("/urls", (req, res) => {
 });
 
 // delete; remove a url
-app.post('/urls/:id/delete', (req, res) => {
+app.post("/urls/:id/delete", (req, res) => {
   const key = req.params.id;
   delete urlDatabase[key];
-  res.redirect('/urls');
+  res.redirect("/urls");
 });
 
 // edit: show edit url
 app.get("/urls/:id", (req, res) => {
   const key = req.params.id;
   const templateVars = { id: req.params.id, longURL: urlDatabase[key] };
-  res.render("urls/edit", templateVars);
-  res.redirect('/urls');
+  res.render("/urls", templateVars);
+  
 });
-
-
 
 ///////////////////////////////////////////////////////////////////////
 // LISTENER
@@ -108,5 +128,3 @@ app.get("/urls/:id", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
-
-
