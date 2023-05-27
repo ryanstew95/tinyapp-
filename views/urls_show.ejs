@@ -42,14 +42,15 @@
           Short URL ID: <a href="/u/<%= id %>"><%= id %></a>
         </p>
           <h3 for="longURL">Edit</h3>
-
+    <div style="display: block;" class="form-inline"> 
           <input
             class="form-control"
             type="text"
             name="longURL"
-            placeholder="http://<%= longURL %>"
-            style="width: 300px; margin: 1em"
+            value="<%= longURL %>"
+            style="width: 300px; margin: 1em;"
           />
+        </div>
           <button type="submit" class="btn btn-primary">Submit</button>
       </div>
       <div class="card-footer text-muted"></div>

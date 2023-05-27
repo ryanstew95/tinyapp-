@@ -92,7 +92,7 @@ app.post('/urls/:id/delete', (req, res) => {
 });
 
 // edit: show edit url
-app.get("/urls/:id/edit", (req, res) => {
+app.get("/urls/:id", (req, res) => {
   const key = req.params.id;
   const templateVars = { id: req.params.id, longURL: urlDatabase[key] };
   res.render("urls/edit", templateVars);
