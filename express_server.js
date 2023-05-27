@@ -64,13 +64,6 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-//login form
-// app.post("/login", (req, res) => {
-//   const templateVars = {
-//     user: users[req.session["userID"]]
-//   };
-//   res.render("urls_login", templateVars);
-// });
 // login form
 app.post("/login", (req, res) => {
   const users = req.body.username; // Access the username entered by the client
@@ -78,6 +71,7 @@ app.post("/login", (req, res) => {
     user: users
   };
   res.render("login", templateVars);
+  res.redirect('/urls');
 });
 
 // create: create new url
