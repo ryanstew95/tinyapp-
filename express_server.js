@@ -16,6 +16,7 @@ const generateRandomString = function(length) {
 ///////////////////////////////////////////////////////////////////////
 
 const express = require("express");
+const cookieParser = require('cookie-parser');
 const app = express();
 const PORT = 8080; // default port 8080
 
@@ -36,6 +37,14 @@ const urlDatabase = {
 ///////////////////////////////////////////////////////////////////////
 
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+// Middleware to pass username to all views
+app.use((req, res, next) => {
+  const username = req.body.username; // Replace with your logic to get the username from the session or authentication mechanism
+  res.locals.username = username;
+  next();
+});
+
 
 ///////////////////////////////////////////////////////////////////////
 // ROUTES
@@ -71,7 +80,14 @@ app.post("/login", (req, res) => {
     user: users
   };
   res.render("login", templateVars);
-  res.redirect('/urls');
+});
+
+app.get("/urls", (req, res) => {
+  const templateVars = {
+    username: req.cookies["username"],
+    // ... any other vars
+  };
+  res.render("urls_index", templateVars);
 });
 
 // create: create new url
@@ -111,8 +127,7 @@ app.post("/urls/:id/delete", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   const key = req.params.id;
   const templateVars = { id: req.params.id, longURL: urlDatabase[key] };
-  res.render("/urls", templateVars);
-  
+  res.render("/urls_show", templateVars);
 });
 
 ///////////////////////////////////////////////////////////////////////
