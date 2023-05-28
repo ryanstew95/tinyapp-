@@ -90,6 +90,11 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 });
 
+// register
+app.get("/register", (req, res) => {
+  res.render("register");
+});
+
 
 // create: create new url
 app.get("/urls/new", (req, res) => {
