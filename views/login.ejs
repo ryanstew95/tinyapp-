@@ -6,8 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>login page</title>
 </head>
+<h2>Logged in as: <%= username %>!</h2>
 <body>
-  your logged in 👍
+  <form method="POST" action="/logout">
+    <button type="submit">Logout</button>
+  </form>
   <form method="POST" action="/urls">
     <button>back to main</button>
   </form>
