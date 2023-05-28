@@ -68,38 +68,42 @@ app.get("/hello", (req, res) => {
 
 // read: index display all urls
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase };
-  console.log(urlDatabase);
+  const username = req.cookies["username"];
+  const templateVars = { urls: urlDatabase,
+    username: username };
   res.render("urls_index", templateVars);
 });
 
 // login form
 app.post("/login", (req, res) => {
-  const users = req.body.username; // Access the username entered by the client
+  const username = req.body.username; // Access the username
+  res.cookie("username", username);
   const templateVars = {
-    user: users
+    username: username
   };
   res.render("login", templateVars);
 });
 
-app.get("/urls", (req, res) => {
-  const templateVars = {
-    username: req.cookies["username"],
-    // ... any other vars
-  };
-  res.render("urls_index", templateVars);
+// logout
+app.post("/logout", (req, res) => {
+  res.clearCookie("username");
+  res.redirect("/urls");
 });
+
 
 // create: create new url
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
-  res.redirect('/urls');
+  const username = req.cookies["username"];
+  const templateVars = { urls: urlDatabase,
+    username: username };
+  res.render("urls_new", templateVars);
 });
 
 // show: show single url
 app.get("/urls/:id", (req, res) => {
+  const username = req.cookies["username"];
   const key = req.params.id;
-  const templateVars = { id: req.params.id, longURL: urlDatabase[key] };
+  const templateVars = { id: req.params.id, longURL: urlDatabase[key], username: username };
   res.render("urls_show", templateVars);
 });
 
@@ -113,7 +117,7 @@ app.get("/u/:id", (req, res) => {
 app.post("/urls", (req, res) => {
   const shortUrl = generateRandomString(6);
   urlDatabase[shortUrl] = req.body.longURL;
-  res.redirect(`/urls/${shortUrl}`);
+  res.redirect('urls');
 });
 
 // delete; remove a url
@@ -124,10 +128,10 @@ app.post("/urls/:id/delete", (req, res) => {
 });
 
 // edit: show edit url
-app.get("/urls/:id", (req, res) => {
+app.post("/urls/:id", (req, res) => {
   const key = req.params.id;
-  const templateVars = { id: req.params.id, longURL: urlDatabase[key] };
-  res.render("/urls_show", templateVars);
+  urlDatabase[key] = req.body.longURL;
+  res.redirect("/urls");
 });
 
 ///////////////////////////////////////////////////////////////////////

@@ -1,7 +1,5 @@
 <header>
-  <% if (username) { %>
-    <h1>Welcome, <%= username %></h1>
-  <% } %>
+
   <nav class="navbar navbar-expand-md navbar-dark bg-success">
     <a class="navbar-brand" href="/urls">TinyApp</a>
     <button
@@ -21,14 +19,17 @@
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
       </div>
     </div>
-    <form method="POST" action="/login">
-      <input
-      class="form-control"
-      type="text"
-      name="username"
-      style="width: 300px; margin: 1em;"
-    />
-      <button>login</button>
-    </form>
+    <% if (username) { %>
+      <h2>Logged in as: <%= username %>!</h2>
+      <form method="POST" action="/logout">
+        <button type="submit">Logout</button>
+      </form>
+    <% } else { %>
+      <form method="POST" action="/login">
+        <input class="form-control" type="text" name="username" style="width: 300px; margin: 1em;" />
+        <button type="submit">Login</button>
+      </form>
+    <% } %>
+    
   </nav>
 </header>
