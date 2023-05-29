@@ -11,12 +11,22 @@ const generateRandomString = function(length) {
 
   return result;
 };
+// Helper function to get user by email
+const getUserByEmail = function(users, email) {
+  for (const userID in users) {
+    const user = users[userID];
+    if (user.email === email) {
+      return user;
+    }
+  }
+  return null;
+};
 ///////////////////////////////////////////////////////////////////////
 // CONFIG
 ///////////////////////////////////////////////////////////////////////
 
 const express = require("express");
-const cookieParser = require('cookie-parser');
+const cookieParser = require("cookie-parser");
 const app = express();
 const PORT = 8080; // default port 8080
 
@@ -31,6 +41,11 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com",
   dIp8z2: "http://www.example.com",
 };
+const newUser = {
+  id: generateRandomString(),
+  email: "example@example.com",
+  password: "password123",
+};
 
 ///////////////////////////////////////////////////////////////////////
 // MIDDLEWARE
@@ -44,7 +59,6 @@ app.use((req, res, next) => {
   res.locals.username = username;
   next();
 });
-
 
 ///////////////////////////////////////////////////////////////////////
 // ROUTES
@@ -68,18 +82,21 @@ app.get("/hello", (req, res) => {
 
 // read: index display all urls
 app.get("/urls", (req, res) => {
-  const username = req.cookies["username"];
-  const templateVars = { urls: urlDatabase,
-    username: username };
+  const userID = req.cookies.userID;
+  const user = urlDatabase[userID];
+  // const username = req.body.username;
+  const templateVars = { urls: urlDatabase, username: user };
   res.render("urls_index", templateVars);
 });
 
 // login form
 app.post("/login", (req, res) => {
   const username = req.body.username; // Access the username
+  // const userID = req.cookies.userID;
+  // const user = newUser[userID];
   res.cookie("username", username);
   const templateVars = {
-    username: username
+    username: username,
   };
   res.render("login", templateVars);
 });
@@ -95,20 +112,58 @@ app.get("/register", (req, res) => {
   res.render("register");
 });
 
+app.post("/register", (req, res) => {
+  const { email, password } = req.body;
+
+  // Check if email or password is empty
+  if (!email || !password) {
+    res.status(400).send("Email and password cannot be empty.");
+    return;
+  }
+
+  // Check if user already exists with the given email
+  if (getUserByEmail(email)) {
+    res.status(400).send("Email already exists.");
+    return;
+  }
+
+  // Create a new user object
+  const newUser = {
+    id: generateRandomString(),
+    email: email,
+    password: password,
+  };
+  const username = req.cookies["username"];
+  // Add the new user object to the global users object or your database
+  username[newUser.id] = newUser;
+
+  // Set the user ID as a cookie
+  res.cookie("userID", newUser.id);
+
+  // Redirect the user to the /urls page
+  res.redirect("/urls");
+});
 
 // create: create new url
 app.get("/urls/new", (req, res) => {
-  const username = req.cookies["username"];
-  const templateVars = { urls: urlDatabase,
-    username: username };
+  const userID = req.cookies.userID;
+  const user = urlDatabase[userID];
+  // const username = req.cookies["username"];
+  const templateVars = { urls: urlDatabase, username: user };
   res.render("urls_new", templateVars);
 });
 
 // show: show single url
 app.get("/urls/:id", (req, res) => {
-  const username = req.cookies["username"];
+  const userID = req.cookies.userID;
+  const user = urlDatabase[userID];
+  // const username = req.cookies["username"];
   const key = req.params.id;
-  const templateVars = { id: req.params.id, longURL: urlDatabase[key], username: username };
+  const templateVars = {
+    id: req.params.id,
+    longURL: urlDatabase[key],
+    username: user,
+  };
   res.render("urls_show", templateVars);
 });
 
@@ -122,7 +177,7 @@ app.get("/u/:id", (req, res) => {
 app.post("/urls", (req, res) => {
   const shortUrl = generateRandomString(6);
   urlDatabase[shortUrl] = req.body.longURL;
-  res.redirect('urls');
+  res.redirect("urls");
 });
 
 // delete; remove a url
