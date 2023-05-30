@@ -2,17 +2,18 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>login page</title>
+  <title>Login</title>
 </head>
-<h2>Logged in as: <%= username %>!</h2>
 <body>
-  <form method="POST" action="/logout">
-    <button type="submit">Logout</button>
-  </form>
-  <form method="POST" action="/urls">
-    <button>back to main</button>
+  <h1>Login</h1>
+  <form method="POST" action="/login">
+    <label for="email">Email:</label>
+    <input type="email" name="email" id="email" required>
+    <br>
+    <label for="password">Password:</label>
+    <input type="password" name="password" id="password" required>
+    <br>
+    <button type="submit">login</button>
   </form>
 </body>
 </html>
