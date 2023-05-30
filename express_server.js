@@ -22,17 +22,18 @@ const urlDatabase = {
 };
 const users = {
   userRandomID: {
-    id: "userRandomID",
-    email: "user@example.com",
-    password: "purple-monkey-dinosaur",
+    id: "ObWvTH",
+    email: "a@a.com",
+    password: "123",
   },
   user2RandomID: {
-    id: "user2RandomID",
-    email: "user2@example.com",
-    password: "dishwasher-funk",
+    id: "VRVC4b",
+    email: "b@b.com",
+    password: "456",
   },
 };
-
+console.log(generateRandomString(6));
+console.log(generateRandomString(6));
 ///////////////////////////////////////////////////////////////////////
 // MIDDLEWARE
 ///////////////////////////////////////////////////////////////////////
@@ -118,15 +119,26 @@ app.get("/u/:id", (req, res) => {
 // login form
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
+
+  // Look up the email address in the user object
   const user = getUserByEmail(users, email);
 
-  if (user && user.password === password) {
-    res.cookie('userID', user.id); // Set the user_id cookie
-    res.redirect('/urls');
-  } else {
-    res.render("login", { error: "Invalid email or password" });
+  // Check if the user exists
+  if (!user) {
+    res.status(403).send("User not found");
+    return;
   }
+
+  // Check if the password is correct
+  if (user.password !== password) {
+    res.status(403).send("Incorrect password");
+    return;
+  }
+
+  res.cookie("user_id", user.id); // Set the user_id cookie
+  res.redirect("/urls");
 });
+
 
 // logout
 app.post("/logout", (req, res) => {
