@@ -117,22 +117,21 @@ app.get("/u/:id", (req, res) => {
 
 // login form
 app.post("/login", (req, res) => {
-  const username = req.body.username;
-  res.cookie("username", username);
-  const userID = req.cookies.userID;
-  ////////////////////////
-  const user = users[userID]; // user is undefined !!!!
-  ///////////////////////
-  const templateVars = {
-    user
-  };
-  res.render("login", templateVars);
+  const { email, password } = req.body;
+  const user = getUserByEmail(users, email);
+
+  if (user && user.password === password) {
+    res.cookie('userID', user.id); // Set the user_id cookie
+    res.redirect('/urls');
+  } else {
+    res.render("login", { error: "Invalid email or password" });
+  }
 });
 
 // logout
 app.post("/logout", (req, res) => {
-  res.clearCookie("username");
-  res.redirect("/urls");
+  res.clearCookie("userID"); // Clear the user_id cookie
+  res.redirect("/login"); // Redirect to the login page
 });
 
 // sign in
@@ -160,7 +159,7 @@ app.post("/register", (req, res) => {
 
   users[newUser.id] = newUser;
 
-  res.cookie("userID", newUser.id);
+  res.cookie("userID", newUser.id); // Set the user_id cookie
 
   res.redirect("/urls");
 });
@@ -172,7 +171,7 @@ app.post("/urls", (req, res) => {
   res.redirect("urls");
 });
 
-// DELETE; remove a url
+// DELETE: remove a url
 app.post("/urls/:id/delete", (req, res) => {
   const key = req.params.id;
   delete urlDatabase[key];
@@ -185,6 +184,7 @@ app.post("/urls/:id", (req, res) => {
   urlDatabase[key] = req.body.longURL;
   res.redirect("/urls");
 });
+
 
 ///////////////////////////////////////////////////////////////////////
 // LISTENER
