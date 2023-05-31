@@ -123,11 +123,11 @@ app.post("/login", (req, res) => {
   // Look up the email address in the user object
   const user = getUserByEmail(users, email);
 
-  // Check if we got a username and/or password
+
   if (!user || !password) {
     return res
       .status(400)
-      .send("<h2>You must provide a username and password</h2>");
+      .send("<h2>Email does not exist!<h2>");
   }
 
   // are the passwords NOT the same
