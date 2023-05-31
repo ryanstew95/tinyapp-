@@ -1,4 +1,4 @@
-const { getUserByEmail, generateRandomString } = require('./helpers');
+const { getUserByEmail, generateRandomString } = require("./helpers");
 
 ///////////////////////////////////////////////////////////////////////
 // CONFIG
@@ -32,8 +32,7 @@ const users = {
     password: "456",
   },
 };
-console.log(generateRandomString(6));
-console.log(generateRandomString(6));
+
 ///////////////////////////////////////////////////////////////////////
 // MIDDLEWARE
 ///////////////////////////////////////////////////////////////////////
@@ -71,6 +70,7 @@ app.get("/hello", (req, res) => {
 app.get("/urls", (req, res) => {
   const userID = req.cookies.userID;
   const user = users[userID];
+  console.log(user);
   const templateVars = { urls: urlDatabase, user };
   res.render("urls_index", templateVars);
 });
@@ -123,27 +123,28 @@ app.post("/login", (req, res) => {
   // Look up the email address in the user object
   const user = getUserByEmail(users, email);
 
-  // Check if the user exists
-  if (!user) {
-    res.status(403).send("User not found");
-    return;
+  // Check if we got a username and/or password
+  if (!user || !password) {
+    return res
+      .status(400)
+      .send("<h2>You must provide a username and password</h2>");
   }
 
-  // Check if the password is correct
+  // are the passwords NOT the same
   if (user.password !== password) {
-    res.status(403).send("Incorrect password");
-    return;
+    return res.status(400).send("<h2>the passwords do not match<h2>");
   }
 
-  res.cookie("user_id", user.id); // Set the user_id cookie
+  // HAPPY PATH 🎉
+  // set a cookie
+  res.cookie("userID", user.id);
   res.redirect("/urls");
 });
 
-
 // logout
 app.post("/logout", (req, res) => {
-  res.clearCookie("userID"); // Clear the user_id cookie
-  res.redirect("/login"); // Redirect to the login page
+  res.clearCookie("userID");
+  res.redirect("/login");
 });
 
 // sign in
@@ -152,13 +153,13 @@ app.post("/register", (req, res) => {
 
   // Check if email or password is empty
   if (!email || !password) {
-    res.status(400).send("Email and password cannot be empty.");
+    res.status(400).send("<h2>Email and password cannot be empty<h2>");
     return;
   }
 
   // Check if user already exists with the given email
   if (getUserByEmail(users, email)) {
-    res.status(400).send("Email already exists.");
+    res.status(400).send("<h2>Email already exists.<h2>");
     return;
   }
 
@@ -171,7 +172,7 @@ app.post("/register", (req, res) => {
 
   users[newUser.id] = newUser;
 
-  res.cookie("userID", newUser.id); // Set the user_id cookie
+  res.cookie("userID", newUser.id);
 
   res.redirect("/urls");
 });
@@ -196,7 +197,6 @@ app.post("/urls/:id", (req, res) => {
   urlDatabase[key] = req.body.longURL;
   res.redirect("/urls");
 });
-
 
 ///////////////////////////////////////////////////////////////////////
 // LISTENER
