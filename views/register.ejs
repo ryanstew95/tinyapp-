@@ -1,11 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous" />
+  <title>URL - TinyApp Example</title>
   <meta charset="UTF-8">
-  <title>Registration</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
+
 <body>
-  <h1>Sign up</h1>
+  <nav class="navbar navbar-expand-md navbar-dark bg-success">
+    <a class="navbar-brand" href="/urls">TinyApp</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+      <div class="navbar-nav">
+      </div>
+    </div>
+  </nav>
+
+  <h1>Sign up here!!</h1>
   <form method="POST" action="/register">
     <label for="email">Email:</label>
     <input type="email" name="email" id="email" required>
@@ -13,7 +29,8 @@
     <label for="password">Password:</label>
     <input type="password" name="password" id="password" required>
     <br>
-    <button type="submit">Sign up</button>
+    <button type="submit">Register!</button>
   </form>
 </body>
 </html>
+

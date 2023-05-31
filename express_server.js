@@ -91,6 +91,12 @@ app.get("/login", (req, res) => {
 app.get("/urls/new", (req, res) => {
   const userID = req.cookies.userID;
   const user = users[userID];
+
+  // Check if user is logged in
+  if (!user) {
+    res.redirect("/login");
+    return;
+  }
   const templateVars = { urls: urlDatabase, user };
   res.render("urls_new", templateVars);
 });
@@ -111,6 +117,13 @@ app.get("/urls/:id", (req, res) => {
 app.get("/u/:id", (req, res) => {
   const key = req.params.id;
   const longURL = urlDatabase[key];
+
+  if (!longURL) {
+
+    // short URL does not exist
+    res.status(404).send("<h2>Short URL not found<h2>");
+    return;
+  }
   res.redirect(longURL);
 });
 
@@ -181,6 +194,14 @@ app.post("/register", (req, res) => {
 
 // save: submit create url
 app.post("/urls", (req, res) => {
+  const userID = req.cookies.userID;
+  const user = users[userID];
+
+  // Check if user is logged in
+  if (!user) {
+    res.status(401).send("<h2>You must be logged in to shorten URLs.<h2>"); // Send error message
+    return;
+  }
   const shortUrl = generateRandomString(6);
   urlDatabase[shortUrl] = req.body.longURL;
   res.redirect("urls");
