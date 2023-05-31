@@ -21,12 +21,12 @@ const urlDatabase = {
   dIp8z2: "http://www.example.com",
 };
 const users = {
-  userRandomID: {
+  ObWvTH: {
     id: "ObWvTH",
     email: "a@a.com",
     password: "123",
   },
-  user2RandomID: {
+  VRVC4b: {
     id: "VRVC4b",
     email: "b@b.com",
     password: "456",
@@ -70,7 +70,9 @@ app.get("/hello", (req, res) => {
 app.get("/urls", (req, res) => {
   const userID = req.cookies.userID;
   const user = users[userID];
-  console.log(user);
+  console.log('user:', user);
+  console.log('userID:', userID);
+  console.log('cookies:', req.cookies);
   const templateVars = { urls: urlDatabase, user };
   res.render("urls_index", templateVars);
 });
