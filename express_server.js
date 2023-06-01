@@ -66,13 +66,25 @@ app.get("/hello", (req, res) => {
 // GET
 ///////////////////////////////////////////////////////////////////////
 
+// helper function
+const urlsForUser = function(id) {
+  const userURLs = {};
+  for (const shortURL in urlDatabase) {
+    if (urlDatabase[shortURL].userID === id) {
+      userURLs[shortURL] = urlDatabase[shortURL];
+    }
+  }
+  return userURLs;
+};
+
 // READ: index display all urls
 app.get("/urls", (req, res) => {
   const userID = req.cookies.userID;
   const user = users[userID];
-  console.log('user:', user);
-  console.log('userID:', userID);
-  console.log('cookies:', req.cookies);
+  if (!user) {
+    return res.status(401).send("<h2>You must be logged in to see this page</h2><p>Visit <a href='http://localhost:8080/login'>http://localhost:8080/login</a> to log in or <a href='http://localhost:8080/register'>http://localhost:8080/register</a> to sign up.</p>");
+
+  }
   const templateVars = { urls: urlDatabase, user };
   res.render("urls_index", templateVars);
 });
@@ -106,6 +118,9 @@ app.get("/urls/:id", (req, res) => {
   const userID = req.cookies.userID;
   const user = users[userID];
   const key = req.params.id;
+  if (!user) {
+    res.status(401).send("<h2>You must be logged in to see this page</h2><p>Visit <a href='http://localhost:8080/login'>http://localhost:8080/login</a> to log in or <a href='http://localhost:8080/register'>http://localhost:8080/register</a> to sign up.</p>");
+  }
   const templateVars = {
     id: req.params.id,
     longURL: urlDatabase[key],
@@ -209,15 +224,62 @@ app.post("/urls", (req, res) => {
 
 // DELETE: remove a url
 app.post("/urls/:id/delete", (req, res) => {
+  const userID = req.cookies.userID;
+  const url = getUserURLByID(userID, req.params.id);
+  
+  if (!url) {
+    return res.status(404).send("<h2>URL not found</h2>");
+  }
+  
+  if (!userID) {
+    return res.status(401).send("<h2>You must be logged in to delete this URL</h2>");
+  }
+
+  if (url.userID !== userID) {
+    return res.status(403).send("<h2>You do not own this URL</h2>");
+  }
   const key = req.params.id;
   delete urlDatabase[key];
   res.redirect("/urls");
 });
 
+// Helper function to get URLs specific to the user
+const getUserURLs = (userID) => {
+  const userURLs = {};
+  for (const shortURL in urlDatabase) {
+    if (urlDatabase[shortURL].userID === userID) {
+      userURLs[shortURL] = urlDatabase[shortURL];
+    }
+  }
+  return userURLs;
+};
+
+// Helper function to get URL specific to the user by ID
+const getUserURLByID = (userID, shortURL) => {
+  const url = urlDatabase[shortURL];
+  if (url && url.userID === userID) {
+    return url;
+  }
+  return null;
+};
+
 // UPDATE: show edit url
 app.post("/urls/:id", (req, res) => {
   const key = req.params.id;
   urlDatabase[key] = req.body.longURL;
+  const userID = req.cookies.userID;
+  const url = getUserURLByID(userID, req.params.id);
+  if (!url) {
+    return res.status(404).send("<h2>URL not found</h2>");
+  }
+  
+  if (!userID) {
+    return res.status(401).send("<h2>You must be logged in to update this URL</h2>");
+  }
+
+  if (url.userID !== userID) {
+    return res.status(403).send("<h2>You do not own this URL</h2>");
+  }
   res.redirect("/urls");
 });
 

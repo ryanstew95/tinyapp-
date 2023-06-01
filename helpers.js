@@ -22,4 +22,5 @@ const getUserByEmail = function(users, email) {
   return null;
 };
 
+
 module.exports = { getUserByEmail, generateRandomString };
