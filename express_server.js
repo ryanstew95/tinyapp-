@@ -16,10 +16,20 @@ app.set("view engine", "ejs");
 ///////////////////////////////////////////////////////////////////////
 
 const urlDatabase = {
-  b2xVn2: "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com",
-  dIp8z2: "http://www.example.com",
+  b2xVn2: {
+    longURL: "http://www.lighthouselabs.ca",
+    userID: "ObWvTH",
+  },
+  "9sm5xK": {
+    longURL: "http://www.google.com",
+    userID: "VRVC4b",
+  },
+  dIp8z2: {
+    longURL: "http://www.example.com",
+    userID: "ObWvTH",
+  },
 };
+
 const users = {
   ObWvTH: {
     id: "ObWvTH",
@@ -69,9 +79,10 @@ app.get("/hello", (req, res) => {
 // helper function
 const urlsForUser = function(id) {
   const userURLs = {};
+  // console.log(urlDatabase);
   for (const shortURL in urlDatabase) {
     if (urlDatabase[shortURL].userID === id) {
-      userURLs[shortURL] = urlDatabase[shortURL];
+      userURLs[shortURL] = urlDatabase[shortURL]["longURL"];
     }
   }
   return userURLs;
@@ -85,7 +96,9 @@ app.get("/urls", (req, res) => {
     return res.status(401).send("<h2>You must be logged in to see this page</h2><p>Visit <a href='http://localhost:8080/login'>http://localhost:8080/login</a> to log in or <a href='http://localhost:8080/register'>http://localhost:8080/register</a> to sign up.</p>");
 
   }
-  const templateVars = { urls: urlDatabase, user };
+  const userURLs = urlsForUser(userID);
+  // console.log(userURLs);
+  const templateVars = { urls: userURLs, user };
   res.render("urls_index", templateVars);
 });
 
@@ -121,25 +134,32 @@ app.get("/urls/:id", (req, res) => {
   if (!user) {
     res.status(401).send("<h2>You must be logged in to see this page</h2><p>Visit <a href='http://localhost:8080/login'>http://localhost:8080/login</a> to log in or <a href='http://localhost:8080/register'>http://localhost:8080/register</a> to sign up.</p>");
   }
+  const url = urlDatabase[key];
+  if (!url) {
+    return res.status(404).send("<h2>URL not found</h2>");
+  }
+  if (url.userID !== userID) {
+    return res.status(403).send("<h2>You do not own this URL</h2>");
+  }
+  // urlDatabase[key] = req.body.longURL;
   const templateVars = {
     id: req.params.id,
-    longURL: urlDatabase[key],
-    user,
+    longURL: null,
+    user
   };
   res.render("urls_show", templateVars);
 });
 
 app.get("/u/:id", (req, res) => {
   const key = req.params.id;
-  const longURL = urlDatabase[key];
+  const url = urlDatabase[key];
 
-  if (!longURL) {
-
+  if (!url) {
     // short URL does not exist
     res.status(404).send("<h2>Short URL not found<h2>");
     return;
   }
-  res.redirect(longURL);
+  res.redirect(url.longURL);
 });
 
 ///////////////////////////////////////////////////////////////////////
@@ -166,7 +186,7 @@ app.post("/login", (req, res) => {
   }
 
   // HAPPY PATH 🎉
-  // set a cookie
+  // set a cookie 🍪
   res.cookie("userID", user.id);
   res.redirect("/urls");
 });
@@ -218,7 +238,10 @@ app.post("/urls", (req, res) => {
     return;
   }
   const shortUrl = generateRandomString(6);
-  urlDatabase[shortUrl] = req.body.longURL;
+  urlDatabase[shortUrl] = {
+    longURL: req.body.longURL,
+    userID:userID,
+  };
   res.redirect("urls");
 });
 
@@ -255,10 +278,15 @@ const getUserURLs = (userID) => {
 };
 
 // Helper function to get URL specific to the user by ID
-const getUserURLByID = (userID, shortURL) => {
-  const url = urlDatabase[shortURL];
-  if (url && url.userID === userID) {
-    return url;
+const getUserURLByID = (userId, shortURL) => {
+
+
+  const { longURL, userID } = urlDatabase[shortURL];
+
+
+
+  if (longURL && userID === userId) {
+    return { longURL, userID };
   }
   return null;
 };
@@ -266,9 +294,11 @@ const getUserURLByID = (userID, shortURL) => {
 // UPDATE: show edit url
 app.post("/urls/:id", (req, res) => {
   const key = req.params.id;
-  urlDatabase[key] = req.body.longURL;
   const userID = req.cookies.userID;
-  const url = getUserURLByID(userID, req.params.id);
+
+  const url = getUserURLByID(userID, key);
+
+
   if (!url) {
     return res.status(404).send("<h2>URL not found</h2>");
   }
@@ -280,6 +310,10 @@ app.post("/urls/:id", (req, res) => {
   if (url.userID !== userID) {
     return res.status(403).send("<h2>You do not own this URL</h2>");
   }
+  console.log(req.body);
+  
+  urlDatabase[key].longURL = req.body.longURL;
+  
   res.redirect("/urls");
 });
 
