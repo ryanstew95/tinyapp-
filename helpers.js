@@ -32,4 +32,15 @@ const urlsForUser = function(id, urlDatabase) {
   return userURLs;
 };
 
-module.exports = { getUserByEmail, generateRandomString, urlsForUser };
+
+// Helper function to get URL specific to the user by ID
+const getUserURLByID = (userId, shortURL, urlDatabase) => {
+  const { longURL, userID } = urlDatabase[shortURL];
+
+  if (longURL && userID === userId) {
+    return { longURL, userID };
+  }
+  return null;
+};
+
+module.exports = { getUserByEmail, generateRandomString, urlsForUser, getUserURLByID };
