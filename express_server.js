@@ -1,14 +1,17 @@
-const { getUserByEmail, generateRandomString } = require("./helpers");
+const { getUserByEmail, generateRandomString, urlsForUser } = require("./helpers");
 
 ///////////////////////////////////////////////////////////////////////
-// CONFIG
+// CONST
 ///////////////////////////////////////////////////////////////////////
 
 const express = require("express");
-const cookieParser = require("cookie-parser");
+// const cookieParser = require("cookie-parser");
+const cookieSession = require('cookie-session');
+const bcrypt = require("bcryptjs");
 const app = express();
 const PORT = 8080;
 
+// Configuration
 app.set("view engine", "ejs");
 
 ///////////////////////////////////////////////////////////////////////
@@ -34,12 +37,12 @@ const users = {
   ObWvTH: {
     id: "ObWvTH",
     email: "a@a.com",
-    password: "123",
+    password: "$2a$10$W04FvS124uxjonDPX3qqFOTocD7LxIVJVWKFJknxvJ0wD9hEtCZUi", // 123
   },
   VRVC4b: {
     id: "VRVC4b",
     email: "b@b.com",
-    password: "456",
+    password: "$2a$10$dikS5Bv7AnRHQRHubuvaP.SdVRutCAe8ZEPOXky4L5pyqLKN/sObe", // 456
   },
 };
 
@@ -47,8 +50,16 @@ const users = {
 // MIDDLEWARE
 ///////////////////////////////////////////////////////////////////////
 
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
+app.use(express.urlencoded({ extended: true })); // create/populate req.body
+//  🍪🍪🍪
+app.use(cookieSession({
+  name: 'authentication',
+  keys: ['Kh7y6v2Rs'],
+
+  // Cookie Options
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}));
+//  🍪🍪🍪
 // Middleware to pass email to all views
 app.use((req, res, next) => {
   const email = req.body.email;
@@ -76,25 +87,19 @@ app.get("/hello", (req, res) => {
 // GET
 ///////////////////////////////////////////////////////////////////////
 
-// helper function
-const urlsForUser = function(id) {
-  const userURLs = {};
-  // console.log(urlDatabase);
-  for (const shortURL in urlDatabase) {
-    if (urlDatabase[shortURL].userID === id) {
-      userURLs[shortURL] = urlDatabase[shortURL]["longURL"];
-    }
-  }
-  return userURLs;
-};
+
 
 // READ: index display all urls
 app.get("/urls", (req, res) => {
-  const userID = req.cookies.userID;
+  const userID = req.session.userID;
+
   const user = users[userID];
   if (!user) {
-    return res.status(401).send("<h2>You must be logged in to see this page</h2><p>Visit <a href='http://localhost:8080/login'>http://localhost:8080/login</a> to log in or <a href='http://localhost:8080/register'>http://localhost:8080/register</a> to sign up.</p>");
-
+    return res
+      .status(401)
+      .send(
+        "<h2>You must be logged in to see this page</h2><p>Visit <a href='http://localhost:8080/login'>http://localhost:8080/login</a> to log in or <a href='http://localhost:8080/register'>http://localhost:8080/register</a> to sign up.</p>"
+      );
   }
   const userURLs = urlsForUser(userID);
   // console.log(userURLs);
@@ -102,12 +107,12 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-// register page
+// DISPLAY register page
 app.get("/register", (req, res) => {
   res.render("register");
 });
 
-// login page
+// display login page
 app.get("/login", (req, res) => {
   res.render("login");
 });
@@ -132,7 +137,11 @@ app.get("/urls/:id", (req, res) => {
   const user = users[userID];
   const key = req.params.id;
   if (!user) {
-    res.status(401).send("<h2>You must be logged in to see this page</h2><p>Visit <a href='http://localhost:8080/login'>http://localhost:8080/login</a> to log in or <a href='http://localhost:8080/register'>http://localhost:8080/register</a> to sign up.</p>");
+    res
+      .status(401)
+      .send(
+        "<h2>You must be logged in to see this page</h2><p>Visit <a href='http://localhost:8080/login'>http://localhost:8080/login</a> to log in or <a href='http://localhost:8080/register'>http://localhost:8080/register</a> to sign up.</p>"
+      );
   }
   const url = urlDatabase[key];
   if (!url) {
@@ -145,7 +154,7 @@ app.get("/urls/:id", (req, res) => {
   const templateVars = {
     id: req.params.id,
     longURL: null,
-    user
+    user,
   };
   res.render("urls_show", templateVars);
 });
@@ -166,38 +175,37 @@ app.get("/u/:id", (req, res) => {
 // POST
 ///////////////////////////////////////////////////////////////////////
 
-// login form
+// submission login form
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
 
   // Look up the email address in the user object
   const user = getUserByEmail(users, email);
 
-
   if (!user || !password) {
-    return res
-      .status(400)
-      .send("<h2>Email does not exist!<h2>");
+    return res.status(400).send("<h2>Email does not exist!<h2>");
   }
 
   // are the passwords NOT the same
-  if (user.password !== password) {
+  // if (user.password !== password) {
+  if (!bcrypt.compareSync(password, user.password)) {
     return res.status(400).send("<h2>the passwords do not match<h2>");
   }
-
   // HAPPY PATH 🎉
   // set a cookie 🍪
-  res.cookie("userID", user.id);
+  // res.cookie("userID", user.id);
+  req.session.userID = user.id;
   res.redirect("/urls");
 });
 
 // logout
 app.post("/logout", (req, res) => {
-  res.clearCookie("userID");
+  // res.clearCookie("userID");
+  req.session.userID = null;
   res.redirect("/login");
 });
 
-// sign in
+// SUBMISSION sign in
 app.post("/register", (req, res) => {
   const { email, password } = req.body;
 
@@ -212,17 +220,22 @@ app.post("/register", (req, res) => {
     res.status(400).send("<h2>Email already exists.<h2>");
     return;
   }
+  const salt = bcrypt.genSaltSync(10);
+  const hash = bcrypt.hashSync(password, salt);
 
   // New user object
   const newUser = {
     id: generateRandomString(6),
     email: email,
-    password: password,
+    password: hash, // Store the HASHED password!
   };
 
   users[newUser.id] = newUser;
+  console.log('user AFTER REGISTRATION:', users);
 
-  res.cookie("userID", newUser.id);
+  // res.cookie("userID", newUser.id);
+  req.session.userID = newUser.id;
+
 
   res.redirect("/urls");
 });
@@ -240,7 +253,7 @@ app.post("/urls", (req, res) => {
   const shortUrl = generateRandomString(6);
   urlDatabase[shortUrl] = {
     longURL: req.body.longURL,
-    userID:userID,
+    userID: userID,
   };
   res.redirect("urls");
 });
@@ -249,13 +262,15 @@ app.post("/urls", (req, res) => {
 app.post("/urls/:id/delete", (req, res) => {
   const userID = req.cookies.userID;
   const url = getUserURLByID(userID, req.params.id);
-  
+
   if (!url) {
     return res.status(404).send("<h2>URL not found</h2>");
   }
-  
+
   if (!userID) {
-    return res.status(401).send("<h2>You must be logged in to delete this URL</h2>");
+    return res
+      .status(401)
+      .send("<h2>You must be logged in to delete this URL</h2>");
   }
 
   if (url.userID !== userID) {
@@ -266,24 +281,9 @@ app.post("/urls/:id/delete", (req, res) => {
   res.redirect("/urls");
 });
 
-// Helper function to get URLs specific to the user
-const getUserURLs = (userID) => {
-  const userURLs = {};
-  for (const shortURL in urlDatabase) {
-    if (urlDatabase[shortURL].userID === userID) {
-      userURLs[shortURL] = urlDatabase[shortURL];
-    }
-  }
-  return userURLs;
-};
-
 // Helper function to get URL specific to the user by ID
 const getUserURLByID = (userId, shortURL) => {
-
-
   const { longURL, userID } = urlDatabase[shortURL];
-
-
 
   if (longURL && userID === userId) {
     return { longURL, userID };
@@ -298,22 +298,23 @@ app.post("/urls/:id", (req, res) => {
 
   const url = getUserURLByID(userID, key);
 
-
   if (!url) {
     return res.status(404).send("<h2>URL not found</h2>");
   }
-  
+
   if (!userID) {
-    return res.status(401).send("<h2>You must be logged in to update this URL</h2>");
+    return res
+      .status(401)
+      .send("<h2>You must be logged in to update this URL</h2>");
   }
 
   if (url.userID !== userID) {
     return res.status(403).send("<h2>You do not own this URL</h2>");
   }
   console.log(req.body);
-  
+
   urlDatabase[key].longURL = req.body.longURL;
-  
+
   res.redirect("/urls");
 });
 
@@ -324,3 +325,4 @@ app.post("/urls/:id", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
+
