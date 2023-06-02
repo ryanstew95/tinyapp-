@@ -24,7 +24,6 @@ const getUserByEmail = function(users, email) {
 // helper function
 const urlsForUser = function(id, urlDatabase) {
   const userURLs = {};
-  // console.log(urlDatabase);
   for (const shortURL in urlDatabase) {
     if (urlDatabase[shortURL].userID === id) {
       userURLs[shortURL] = urlDatabase[shortURL]["longURL"];

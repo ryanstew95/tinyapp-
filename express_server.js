@@ -92,7 +92,6 @@ app.get("/hello", (req, res) => {
 // READ: index display all urls
 app.get("/urls", (req, res) => {
   const userID = req.session.userID;
-
   const user = users[userID];
   if (!user) {
     return res
@@ -101,8 +100,10 @@ app.get("/urls", (req, res) => {
         "<h2>You must be logged in to see this page</h2><p>Visit <a href='http://localhost:8080/login'>http://localhost:8080/login</a> to log in or <a href='http://localhost:8080/register'>http://localhost:8080/register</a> to sign up.</p>"
       );
   }
-  const userURLs = urlsForUser(userID);
-  // console.log(userURLs);
+  const userURLs = urlsForUser(userID, urlDatabase);
+
+  console.log(userURLs); // output {}
+
   const templateVars = { urls: userURLs, user };
   res.render("urls_index", templateVars);
 });
@@ -119,7 +120,7 @@ app.get("/login", (req, res) => {
 
 // CREATE: create new url
 app.get("/urls/new", (req, res) => {
-  const userID = req.cookies.userID;
+  const userID = req.session.userID;
   const user = users[userID];
 
   // Check if user is logged in
@@ -133,7 +134,7 @@ app.get("/urls/new", (req, res) => {
 
 // show: show single url
 app.get("/urls/:id", (req, res) => {
-  const userID = req.cookies.userID;
+  const userID = req.session.userID;
   const user = users[userID];
   const key = req.params.id;
   if (!user) {
@@ -242,7 +243,7 @@ app.post("/register", (req, res) => {
 
 // save: submit create url
 app.post("/urls", (req, res) => {
-  const userID = req.cookies.userID;
+  const userID = req.session.userID;
   const user = users[userID];
 
   // Check if user is logged in
@@ -260,7 +261,7 @@ app.post("/urls", (req, res) => {
 
 // DELETE: remove a url
 app.post("/urls/:id/delete", (req, res) => {
-  const userID = req.cookies.userID;
+  const userID = req.session.userID;
   const url = getUserURLByID(userID, req.params.id);
 
   if (!url) {
