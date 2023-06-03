@@ -8,9 +8,7 @@ This project was made by Ryan Stewart and was conducted as part of the Lighthous
 
 ## Final Product
 
-![urls/](mainPage.png)
-
-!["screenshot description"](#)
+![](mainPage.png)
 
 ## Dependencies
 
