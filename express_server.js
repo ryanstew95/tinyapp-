@@ -5,7 +5,6 @@ const { getUserByEmail, generateRandomString, urlsForUser, getUserURLByID } = re
 ///////////////////////////////////////////////////////////////////////
 
 const express = require("express");
-// const cookieParser = require("cookie-parser");
 const cookieSession = require('cookie-session');
 const bcrypt = require("bcryptjs");
 const app = express();
@@ -101,9 +100,6 @@ app.get("/urls", (req, res) => {
       );
   }
   const userURLs = urlsForUser(userID, urlDatabase);
-
-  console.log(userURLs); // output {}
-
   const templateVars = { urls: userURLs, user };
   res.render("urls_index", templateVars);
 });
@@ -151,7 +147,7 @@ app.get("/urls/:id", (req, res) => {
   if (url.userID !== userID) {
     return res.status(403).send("<h2>You do not own this URL<br>Return to main page<p><a href='http://localhost:8080/urls'>http://localhost:8080/urls</a></p></h2>");
   }
-  // urlDatabase[key] = req.body.longURL;
+
   const templateVars = {
     id: req.params.id,
     longURL: null,
@@ -188,20 +184,18 @@ app.post("/login", (req, res) => {
   }
 
   // are the passwords NOT the same
-  // if (user.password !== password) {
   if (!bcrypt.compareSync(password, user.password)) {
     return res.status(400).send("<h2>the passwords do not match<br>Return to main page<p><a href='http://localhost:8080/urls'>http://localhost:8080/urls</a></p><h2>");
   }
+  
   // HAPPY PATH 🎉
   // set a cookie 🍪
-  // res.cookie("userID", user.id);
   req.session.userID = user.id;
   res.redirect("/urls");
 });
 
 // logout
 app.post("/logout", (req, res) => {
-  // res.clearCookie("userID");
   req.session.userID = null;
   res.redirect("/login");
 });
@@ -232,12 +226,7 @@ app.post("/register", (req, res) => {
   };
 
   users[newUser.id] = newUser;
-  // console.log('user AFTER REGISTRATION:', users);
-
-  // res.cookie("userID", newUser.id);
   req.session.userID = newUser.id;
-
-
   res.redirect("/urls");
 });
 
