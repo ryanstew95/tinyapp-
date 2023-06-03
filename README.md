@@ -8,7 +8,7 @@ This project was made by Ryan Stewart and was conducted as part of the Lighthous
 
 ## Final Product
 
-![](docs/mainPage.png)
+![Alt text](docs/mainPage.png)
 
 ![Alt text](docs/create.png)
 
