@@ -8,15 +8,15 @@ This project was made by Ryan Stewart and was conducted as part of the Lighthous
 
 ## Final Product
 
-![](mainPage.png)
+![](docs/mainPage.png)
 
-![Alt text](create.png)
+![Alt text](docs/create.png)
 
-![Alt text](edit.png)
+![Alt text](docs/edit.png)
 
-![Alt text](login.png)
+![Alt text](docs/login.png)
 
-![Alt text](toSeeThisPage.png)
+![Alt text](docs/toSeeThisPage.png)
 
 ## Dependencies
 
