@@ -8,7 +8,7 @@ This project was made by Ryan Stewart and was conducted as part of the Lighthous
 
 ## Final Product
 
-!["screenshot description"](#)
+![mainPage](http://github.com/tinyapp-/tinyapp-/blob/main/mainPage.png)
 !["screenshot description"](#)
 
 ## Dependencies
