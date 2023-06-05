@@ -191,13 +191,12 @@ app.post("/login", (req, res) => {
   // HAPPY PATH 🎉
   // set a cookie 🍪
   req.session.userID = user.id;
-  console.log(req.session.userID);
   res.redirect("/urls");
 });
 
 // logout
 app.post("/logout", (req, res) => {
-  req.session.userID = null;
+  req.session = null;
   res.redirect("/login");
 });
 
