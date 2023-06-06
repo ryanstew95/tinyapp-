@@ -1,4 +1,5 @@
 const { getUserByEmail, generateRandomString, urlsForUser, getUserURLByID } = require("./helpers");
+const { urlDatabase, users } = require("./dataBases");
 
 ///////////////////////////////////////////////////////////////////////
 // CONST
@@ -12,38 +13,6 @@ const PORT = 8080;
 
 // Configuration
 app.set("view engine", "ejs");
-
-///////////////////////////////////////////////////////////////////////
-// DATABASE
-///////////////////////////////////////////////////////////////////////
-
-const urlDatabase = {
-  b2xVn2: {
-    longURL: "http://www.lighthouselabs.ca",
-    userID: "ObWvTH",
-  },
-  "9sm5xK": {
-    longURL: "http://www.google.com",
-    userID: "VRVC4b",
-  },
-  dIp8z2: {
-    longURL: "http://www.example.com",
-    userID: "ObWvTH",
-  },
-};
-
-const users = {
-  ObWvTH: {
-    id: "ObWvTH",
-    email: "a@a.com",
-    password: "$2a$10$W04FvS124uxjonDPX3qqFOTocD7LxIVJVWKFJknxvJ0wD9hEtCZUi", // 123
-  },
-  VRVC4b: {
-    id: "VRVC4b",
-    email: "b@b.com",
-    password: "$2a$10$dikS5Bv7AnRHQRHubuvaP.SdVRutCAe8ZEPOXky4L5pyqLKN/sObe", // 456
-  },
-};
 
 ///////////////////////////////////////////////////////////////////////
 // MIDDLEWARE
@@ -70,23 +39,9 @@ app.use((req, res, next) => {
 // ROUTES
 ///////////////////////////////////////////////////////////////////////
 
-app.get("/", (req, res) => {
-  res.send("Hello!");
-});
-
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
-});
-
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
-});
-
 ///////////////////////////////////////////////////////////////////////
 // GET
 ///////////////////////////////////////////////////////////////////////
-
-
 
 // READ: index display all urls
 app.get("/urls", (req, res) => {
@@ -292,7 +247,6 @@ app.post("/urls/:id", (req, res) => {
   if (url.userID !== userID) {
     return res.status(403).send("<h2>You do not own this URL<br>Return to main page<p><a href='http://localhost:8080/urls'>http://localhost:8080/urls</a></p></h2>");
   }
-  console.log(req.body);
 
   urlDatabase[key].longURL = req.body.longURL;
 
