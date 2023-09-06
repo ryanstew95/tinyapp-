@@ -7,16 +7,83 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* Center the sign-up form */
+    h1 {
+      text-align: center;
+    }
+    a {
+  font-weight: bold;
+}
+    /* Style the form container */
+    form {
+      width: 300px;
+      margin: 0 auto;
+    }
+
+    /* Style form labels */
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    /* Style form inputs */
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    /* Style the sign-up button */
+    button[type="submit"] {
+      width: 100%;
+      padding: 10px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    /* Style the "Login" link */
+    a[href="/login"] {
+      text-align: center;
+      display: block;
+      margin-top: 10px;
+      color: #007bff;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    /* Style the "Login" button inside the navbar */
+    .navbar button[type="button"] {
+      background-color: #28a745;
+    }
+
+    /* Style the "Sign up" button inside the navbar */
+    .navbar button[type="submit"] {
+      background-color: #007bff;
+    }
+
+    /* Change the background color of the "Sign up" button on hover */
+    .navbar button[type="submit"]:hover {
+      background-color: #0056b3;
+    }
+  </style>
 </head>
 
 <body>
+  
   <nav class="navbar navbar-expand-md navbar-dark bg-success">
     <a class="navbar-brand" href="/urls">TinyApp</a>
     <form method="POST" action="/login">
-      <a href="/login"><button type="button">Login</button></a>
+
     </form>
     <form method="GET" action="/register">
-      <button type="submit">Sign up</button>
+      <!-- <button class="sign-up"type="submit">Sign up</button> -->
     </form>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -37,6 +104,9 @@
     <br>
     <button type="submit">Register!</button>
   </form>
+  <a href="/login">Already have an account? Login!</a>
 </body>
 </html>
+
+
 

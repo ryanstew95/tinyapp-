@@ -20,6 +20,12 @@
     </div>
     <% if (user) { %>
       <h2>Logged in as: <%= user.email %>!</h2>
+      <style>
+        h2 {
+          font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif
+        
+        }
+      </style>
       <form method="POST" action="/logout">
         <button type="submit">Logout</button>
       </form>
