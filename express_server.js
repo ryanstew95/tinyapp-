@@ -17,7 +17,7 @@ app.set("view engine", "ejs");
 ///////////////////////////////////////////////////////////////////////
 // MIDDLEWARE
 ///////////////////////////////////////////////////////////////////////
-
+app.use(express.static("styles"));
 app.use(express.urlencoded({ extended: true })); // create/populate req.body
 //  🍪🍪🍪
 app.use(cookieSession({

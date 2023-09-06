@@ -14,6 +14,7 @@
       integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
       crossorigin="anonymous"
     />
+
     <title>TinyApp</title>
   </head>
   <%- include('partials/_header') %>
@@ -36,12 +37,12 @@
               <td><%= urls[id] %></td>
               <td>
                 <form method="POST" action="/urls/<%= id %>/delete">
-                  <button>delete</button>
+                  <button class="delete">delete</button>
                 </form>
               </td>
               <td>
                 <form method="GET" action="/urls/<%= id %>">
-                  <button>edit</button>
+                  <button class="edit">edit</button>
                 </form>
               </td>
             </tr>
@@ -49,6 +50,68 @@
         </tbody>
       </table>
     </main>
+    <style>
+      main {
+  margin: 1em;
+}
+
+/* Style the table */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1em;
+}
+
+/* Style the table header */
+th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+/* Style the table rows */
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+/* Style the table cells */
+td {
+  padding: 8px;
+}
+
+/* Style the links */
+a {
+  text-decoration: none;
+  color: #3366CC;
+  font-weight: bold;
+}
+
+/* Style the buttons */
+button {
+  background-color: #3366CC;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+.edit {
+  background-color: #24a0ed;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+.delete {
+  background-color: #dc3545;;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+button:hover {
+  background-color: #c82333;
+}
+
+    </style>
     <!-- Bootstrap JS -->
     <script
       src="https://code.jquery.com/jquery-3.3.1.slim.min.js"

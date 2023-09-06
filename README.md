@@ -8,13 +8,15 @@ This project was made by Ryan Stewart and was conducted as part of the Lighthous
 
 ## Final Product
 
-![Alt text](docs/mainPage.png)
+![Alt text](docs/home.png)
 
-![Alt text](docs/create.png)
+![Alt text](docs/new.png)
 
-![Alt text](docs/edit.png)
+![Alt text](docs/newedit.png)
 
-![Alt text](docs/login.png)
+![Alt text](docs/newlogin.png)
+
+![Alt text](docs/newsignup.png)
 
 ![Alt text](docs/toSeeThisPage.png)
 
