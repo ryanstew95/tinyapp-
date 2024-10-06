@@ -51,7 +51,7 @@ app.get("/urls", (req, res) => {
     return res
       .status(401)
       .send(
-        "<h2>You must be logged in to see this page</h2><p>Visit <a href='http://localhost:8080/login'>http://localhost:8080/login</a> to log in or <a href='http://localhost:8080/register'>http://localhost:8080/register</a> to sign up.</p>"
+        "<h2>You must be logged in to see this page</h2><p>Visit <a href='https://mytinyapp-hasg.onrender.com/login'>https://mytinyapp-hasg.onrender.com/login</a> to log in or <a href='https://mytinyapp-hasg.onrender.com/register'>https://mytinyapp-hasg.onrender.com/register</a> to sign up.</p>"
       );
   }
   const userURLs = urlsForUser(userID, urlDatabase);
@@ -92,15 +92,15 @@ app.get("/urls/:id", (req, res) => {
     res
       .status(401)
       .send(
-        "<h2>You must be logged in to see this page</h2><p>Visit <a href='http://localhost:8080/login'>http://localhost:8080/login</a> to log in or <a href='http://localhost:8080/register'>http://localhost:8080/register</a> to sign up.</p>"
+        "<h2>You must be logged in to see this page</h2><p>Visit <a href='http://mytinyapp-hasg.onrender.com/login'>http://mytinyapp-hasg.onrender.com/login</a> to log in or <a href='http://mytinyapp-hasg.onrender.com/register'>http://mytinyapp-hasg.onrender.com/register</a> to sign up.</p>"
       );
   }
   const url = urlDatabase[key];
   if (!url) {
-    return res.status(404).send("<h2>URL not found<br>Return to main page<p><a href='http://localhost:8080/urls'>http://localhost:8080/urls</a></p></h2>");
+    return res.status(404).send("<h2>URL not found<br>Return to main page<p><a href='http://mytinyapp-hasg.onrender.com/urls'>http://mytinyapp-hasg.onrender.com/urls</a></p></h2>");
   }
   if (url.userID !== userID) {
-    return res.status(403).send("<h2>You do not own this URL<br>Return to main page<p><a href='http://localhost:8080/urls'>http://localhost:8080/urls</a></p></h2>");
+    return res.status(403).send("<h2>You do not own this URL<br>Return to main page<p><a href='http://mytinyapp-hasg.onrender.com/urls'>http://mytinyapp-hasg.onrender.com/urls</a></p></h2>");
   }
 
   const templateVars = {
@@ -117,7 +117,7 @@ app.get("/u/:id", (req, res) => {
 
   if (!url) {
     // short URL does not exist
-    res.status(404).send("<h2>Short URL not found<br>Return to main page<p><a href='http://localhost:8080/urls'>http://localhost:8080/urls</a></p><h2>");
+    res.status(404).send("<h2>Short URL not found<br>Return to main page<p><a href='http://mytinyapp-hasg.onrender.com/urls'>http://mytinyapp-hasg.onrender.com/urls</a></p><h2>");
     return;
   }
   res.redirect(url.longURL);
@@ -135,12 +135,12 @@ app.post("/login", (req, res) => {
   const user = getUserByEmail(users, email);
 
   if (!user || !password) {
-    return res.status(400).send("<h2>Email does not exist!<p>Visit <a href='http://localhost:8080/login'>http://localhost:8080/login</a> to log in or <a href='http://localhost:8080/register'>http://localhost:8080/register</a> to sign up.</p><h2>");
+    return res.status(400).send("<h2>Email does not exist!<p>Visit <a href='http://mytinyapp-hasg.onrender.com/login'>http://mytinyapp-hasg.onrender.com/login</a> to log in or <a href='http://mytinyapp-hasg.onrender.com/register'>http://mytinyapp-hasg.onrender.com/register</a> to sign up.</p><h2>");
   }
 
   // are the passwords NOT the same
   if (!bcrypt.compareSync(password, user.password)) {
-    return res.status(400).send("<h2>the passwords do not match<br>Return to main page<p><a href='http://localhost:8080/urls'>http://localhost:8080/urls</a></p><h2>");
+    return res.status(400).send("<h2>the passwords do not match<br>Return to main page<p><a href='http://mytinyapp-hasg.onrender.com/urls'>http://mytinyapp-hasg.onrender.com/urls</a></p><h2>");
   }
   
   // HAPPY PATH 🎉
@@ -161,13 +161,13 @@ app.post("/register", (req, res) => {
 
   // Check if email or password is empty
   if (!email || !password) {
-    res.status(400).send("<h2>Email and password cannot be empty<br>Return to register in page<p><a href='http://localhost:8080/register'>http://localhost:8080/urls</a></p><h2>");
+    res.status(400).send("<h2>Email and password cannot be empty<br>Return to register in page<p><a href='http://mytinyapp-hasg.onrender.com/register'>http://mytinyapp-hasg.onrender.com/urls</a></p><h2>");
     return;
   }
 
   // Check if user already exists with the given email
   if (getUserByEmail(users, email)) {
-    res.status(400).send("<h2>Email already exists.<br><p>Visit <a href='http://localhost:8080/login'>http://localhost:8080/login</a> to log in or <a href='http://localhost:8080/register'>http://localhost:8080/register</a> to sign up.</p><h2>");
+    res.status(400).send("<h2>Email already exists.<br><p>Visit <a href='http://mytinyapp-hasg.onrender.com/login'>http://mytinyapp-hasg.onrender.com/login</a> to log in or <a href='http://mytinyapp-hasg.onrender.com/register'>http://mytinyapp-hasg.onrender.com/register</a> to sign up.</p><h2>");
     return;
   }
   const salt = bcrypt.genSaltSync(10);
@@ -192,7 +192,7 @@ app.post("/urls", (req, res) => {
 
   // Check if user is logged in
   if (!user) {
-    res.status(401).send("<h2>You must be logged in to shorten URLs.<br><p>Visit <a href='http://localhost:8080/login'>http://localhost:8080/login</a> to log in<h2>"); // Send error message
+    res.status(401).send("<h2>You must be logged in to shorten URLs.<br><p>Visit <a href='http://mytinyapp-hasg.onrender.com/login'>http://mytinyapp-hasg.onrender.com/login</a> to log in<h2>"); // Send error message
     return;
   }
   const shortUrl = generateRandomString(6);
@@ -210,17 +210,17 @@ app.post("/urls/:id/delete", (req, res) => {
 
 
   if (!url) {
-    return res.status(404).send("<h2>URL not found<br>Return to main page<p><a href='http://localhost:8080/urls'>http://localhost:8080/urls</a></p></h2>");
+    return res.status(404).send("<h2>URL not found<br>Return to main page<p><a href='http://mytinyapp-hasg.onrender.com/urls'>http://mytinyapp-hasg.onrender.com/urls</a></p></h2>");
   }
 
   if (!userID) {
     return res
       .status(401)
-      .send("<h2>You must be logged in to delete this URL<br><p><a href='http://localhost:8080/login'>http://localhost:8080/login</a></p></h2>");
+      .send("<h2>You must be logged in to delete this URL<br><p><a href='http://mytinyapp-hasg.onrender.com/login'>http://mytinyapp-hasg.onrender.com/login</a></p></h2>");
   }
 
   if (url.userID !== userID) {
-    return res.status(403).send("<h2>You do not own this URL<br>Return to main page<p><a href='http://localhost:8080/urls'>http://localhost:8080/urls</a></p></h2>");
+    return res.status(403).send("<h2>You do not own this URL<br>Return to main page<p><a href='http://mytinyapp-hasg.onrender.com/urls'>http://mytinyapp-hasg.onrender.com/urls</a></p></h2>");
   }
   const key = req.params.id;
   delete urlDatabase[key];
@@ -235,17 +235,17 @@ app.post("/urls/:id", (req, res) => {
   const url = getUserURLByID(userID, key, urlDatabase);
 
   if (!url) {
-    return res.status(404).send("<h2>URL not found<br>Return to main page<p><a href='http://localhost:8080/urls'>http://localhost:8080/urls</a></p></h2>");
+    return res.status(404).send("<h2>URL not found<br>Return to main page<p><a href='http://mytinyapp-hasg.onrender.com/urls'>http://mytinyapp-hasg.onrender.com/urls</a></p></h2>");
   }
 
   if (!userID) {
     return res
       .status(401)
-      .send("<h2>You must be logged in to update this URL<br><p><a href='http://localhost:8080/login'>http://localhost:8080/login</a></p></h2>");
+      .send("<h2>You must be logged in to update this URL<br><p><a href='http://mytinyapp-hasg.onrender.com/login'>http://mytinyapp-hasg.onrender.com/login</a></p></h2>");
   }
 
   if (url.userID !== userID) {
-    return res.status(403).send("<h2>You do not own this URL<br>Return to main page<p><a href='http://localhost:8080/urls'>http://localhost:8080/urls</a></p></h2>");
+    return res.status(403).send("<h2>You do not own this URL<br>Return to main page<p><a href='http://mytinyapp-hasg.onrender.com/urls'>http://mytinyapp-hasg.onrender.com/urls</a></p></h2>");
   }
 
   urlDatabase[key].longURL = req.body.longURL;
